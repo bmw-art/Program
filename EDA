@@ -1,0 +1,228 @@
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+
+# ----------------------------------------------------------
+# Step 1 : Read Excel File
+# ----------------------------------------------------------
+df = pd.read_excel("/content/Student_Placement.xlsx")
+
+print("="*80)
+print("STUDENT PLACEMENT DATASET")
+print("="*80)
+
+# ----------------------------------------------------------
+# Step 2 : Display Dataset
+# ----------------------------------------------------------
+print("\nFirst 5 Records")
+print(df.head())
+
+print("\nLast 5 Records")
+print(df.tail())
+
+# ----------------------------------------------------------
+# Step 3 : Shape
+# ----------------------------------------------------------
+print("\nShape of Dataset")
+print(df.shape)
+
+# ----------------------------------------------------------
+# Step 4 : Columns
+# ----------------------------------------------------------
+print("\nColumns")
+print(df.columns)
+
+# ----------------------------------------------------------
+# Step 5 : Data Types
+# ----------------------------------------------------------
+print("\nData Types")
+print(df.dtypes)
+
+# ----------------------------------------------------------
+# Step 6 : Dataset Information
+# ----------------------------------------------------------
+print("\nInformation")
+print(df.info())
+
+# ----------------------------------------------------------
+# Step 7 : Statistical Summary
+# ----------------------------------------------------------
+print("\nStatistical Summary")
+print(df.describe(include='all'))
+
+# ----------------------------------------------------------
+# Step 8 : Missing Values
+# ----------------------------------------------------------
+print("\nMissing Values")
+print(df.isnull().sum())
+
+# ----------------------------------------------------------
+# Step 9 : Duplicate Records
+# ----------------------------------------------------------
+print("\nDuplicate Records")
+print(df.duplicated().sum())
+
+print("\nDuplicate Rows")
+print(df[df.duplicated()])
+
+# ----------------------------------------------------------
+# Step 10 : Unique Values
+# ----------------------------------------------------------
+print("\nPlacement Values")
+print(df["Placement"].unique())
+
+print("\nDepartment Values")
+print(df["Department"].unique())
+
+print("\nProject Domain Values")
+print(df["Project_Domain"].unique())
+
+# ==========================================================
+# DATA CLEANING
+# ==========================================================
+
+print("\n")
+print("="*80)
+print("DATA CLEANING")
+print("="*80)
+
+# ----------------------------------------------------------
+# Step 11 : Convert Numeric Columns
+# ----------------------------------------------------------
+
+numeric_columns = [
+    "CGPA",
+    "Projects",
+    "Internship_Duration_Months",
+    "Certifications",
+    "Hackathons",
+    "Coding_Score",
+    "Communication",
+    "Aptitude",
+    "Resume_Score",
+    "Mock_Interview",
+    "Backlogs",
+    "Attendance",
+    "Package_LPA"
+]
+
+for col in numeric_columns:
+    df[col] = pd.to_numeric(df[col], errors='coerce')
+
+print("\nData Types After Conversion")
+print(df.dtypes)
+
+# ----------------------------------------------------------
+# Step 12 : Missing Values After Conversion
+# ----------------------------------------------------------
+print("\nMissing Values")
+print(df.isnull().sum())
+
+# ----------------------------------------------------------
+# Step 13 : Fill Missing Values
+# ----------------------------------------------------------
+
+for col in numeric_columns:
+    df[col] = df[col].fillna(df[col].median())
+
+# Fill text columns
+
+text_columns = [
+    "Placement",
+    "Company_Name",
+    "Project_Domain",
+    "Internship_Company"
+]
+
+for col in text_columns:
+    df[col] = df[col].fillna("Unknown")
+
+# ----------------------------------------------------------
+# Step 14 : Remove Duplicate Records
+# ----------------------------------------------------------
+
+df = df.drop_duplicates()
+
+print("\nDuplicate Records After Removal")
+print(df.duplicated().sum())
+
+# ----------------------------------------------------------
+# Step 15 : Standardize Placement Labels
+# ----------------------------------------------------------
+
+df["Placement"] = df["Placement"].astype(str).str.strip()
+
+df["Placement"] = df["Placement"].replace({
+    "YES":"Placed",
+    "Yes":"Placed",
+    "yes":"Placed",
+    "placed":"Placed",
+    "No":"Not Placed",
+    "NO":"Not Placed",
+    "not placed":"Not Placed",
+    "Not placed":"Not Placed"
+})
+
+# ----------------------------------------------------------
+# Step 16 : Fix Invalid CGPA
+# ----------------------------------------------------------
+
+df.loc[df["CGPA"] > 10, "CGPA"] = 10
+df.loc[df["CGPA"] < 0, "CGPA"] = 0
+
+# ----------------------------------------------------------
+# Step 17 : Fix Invalid Coding Score
+# ----------------------------------------------------------
+
+df.loc[df["Coding_Score"] > 100, "Coding_Score"] = 100
+df.loc[df["Coding_Score"] < 0, "Coding_Score"] = 0
+
+# ==========================================================
+# Save Cleaned Dataset
+# ==========================================================
+
+df.to_excel("Student_Placement_After_EDA.xlsx", index=False)
+
+print("Cleaned dataset saved as:")
+print("student_placement_cleaned_1000.xlsx")
+
+# ----------------------------------------------------------
+# Step 18 : Verify Cleaning
+# ----------------------------------------------------------
+
+print("\nMissing Values After Cleaning")
+print(df.isnull().sum())
+
+print("\nPlacement Values")
+print(df["Placement"].unique())
+
+print("\nDataset Shape")
+print(df.shape)
+
+# ==========================================================
+# CORRELATION
+# ==========================================================
+
+print("\nCorrelation Matrix")
+
+correlation = df.select_dtypes(include=np.number).corr()
+
+print(correlation)
+
+# ==========================================================
+# VISUALIZATION
+# ==========================================================
+
+# Histogram
+df.hist(figsize=(14,12))
+plt.suptitle("Histogram of Numerical Features")
+plt.show()
+
+# ----------------------------------------------------------
+# Box Plot
+# ----------------------------------------------------------
+
+plt.figure(figsize=(12,6))
+df.boxplot(rot=90)
+plt.title("Box Plot")
+plt.show()
