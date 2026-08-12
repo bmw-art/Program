@@ -1,0 +1,23 @@
+import numpy as np
+import matplotlib.pyplot as plt
+
+x = np.linspace(-5, 5, 100)
+
+# Activation functions
+sigmoid = 1 / (1 + np.exp(-x))
+tanh = np.tanh(x)
+relu = np.maximum(0, x)
+
+# Plot
+plt.figure(figsize=(8, 5))
+
+plt.plot(x, sigmoid, label="Sigmoid")
+plt.plot(x, tanh, label="Tanh")
+plt.plot(x, relu, label="ReLU")
+
+plt.title("Activation Functions")
+plt.xlabel("Input")
+plt.ylabel("Output")
+plt.legend()
+
+plt.show()
