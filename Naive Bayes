@@ -1,0 +1,43 @@
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+from google.colab import files
+
+uploaded = files.upload()
+
+df = pd.read_excel('Student_Placement_Dataset.xlsx')
+df.head()
+
+from sklearn.preprocessing import LabelEncoder
+
+df2 = df.copy()
+
+for col in df2.select_dtypes(include='object').columns:
+    if col not in ['Student_ID','Student_Name','Company_Name','Job_Role','Offer_Type']:
+        df2[col] = LabelEncoder().fit_transform(df2[col].astype(str))
+
+from sklearn.naive_bayes import GaussianNB
+from sklearn.model_selection import train_test_split
+from sklearn.metrics import accuracy_score, classification_report, confusion_matrix
+
+features = [
+    'UG_CGPA','Python_Skill','Java_Skill','SQL_Skill',
+    'Communication_Skill','Logical_Reasoning','Aptitude_Score',
+    'Technical_Test','Resume_Score','Technical_Interview'
+]
+
+X = df2[features]
+y = df2['Placement_Status']
+
+X_train, X_test, y_train, y_test = train_test_split(
+    X, y, test_size=0.2, random_state=42
+)
+
+model = GaussianNB()
+model.fit(X_train, y_train)
+
+pred = model.predict(X_test)
+
+print('Accuracy', accuracy_score(y_test, pred))
+print(confusion_matrix(y_test, pred))
+print(classification_report(y_test, pred))
