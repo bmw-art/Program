@@ -1,0 +1,72 @@
+import numpy as np
+
+# Training Dataset
+X = np.array([
+    [0, 0],
+    [0, 1],
+    [1, 0],
+    [1, 1]
+])
+
+y = np.array([0, 0, 0, 1])
+
+# Parameters
+learning_rate = 0.1
+epochs = 10
+
+# Initialize weights and bias
+weights = np.zeros(X.shape[1])
+bias = 0
+
+
+# Activation Function
+def activation(net):
+    if net >= 0:
+        return 1
+    else:
+        return 0
+
+
+# Perceptron Training
+for epoch in range(epochs):
+
+    print(f"\nEpoch {epoch + 1}")
+
+    for i in range(len(X)):
+
+        net = np.dot(X[i], weights) + bias
+
+        prediction = activation(net)
+
+        error = y[i] - prediction
+
+        weights = weights + learning_rate * error * X[i]
+
+        bias = bias + learning_rate * error
+
+        print(
+            "Input:", X[i],
+            "Target:", y[i],
+            "Prediction:", prediction,
+            "Error:", error
+        )
+
+    print("Updated Weights:", weights)
+    print("Updated Bias:", bias)
+
+
+# Final Model
+print("\nFinal Weights:", weights)
+print("Final Bias:", bias)
+
+
+# Testing
+print("\nTesting the Trained Perceptron")
+
+for sample in X:
+
+    net = np.dot(sample, weights) + bias
+
+    prediction = activation(net)
+
+    print("Input:", sample, "Output:", prediction)
