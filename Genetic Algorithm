@@ -1,0 +1,28 @@
+import random
+
+population=[random.randint(0,31) for _ in range(6)]
+
+def fitness(x):
+    return x*x
+
+for generation in range(5):
+
+    population=sorted(population,key=fitness,reverse=True)
+
+    parent1=population[0]
+    parent2=population[1]
+
+    child=(parent1+parent2)//2
+
+    if random.random()<0.3:
+        child+=random.randint(-2,2)
+
+    population[-1]=child
+
+print("Final Population")
+
+print(population)
+
+print("Best Solution")
+
+print(max(population,key=fitness))
